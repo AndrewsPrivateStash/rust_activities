@@ -50,36 +50,6 @@ impl Bill {
     }
 }
 
-fn make_storage(path: &str) -> HashMap<String, Bill> {
-    let mut ret: HashMap<String, Bill> = HashMap::new();
-    read_data(path, &mut ret).expect("could not read freom file");
-    ret
-}
-
-fn main_menu() {
-    println!("\nMenu:");
-    println!("1) Add");
-    println!("2) Delete");
-    println!("3) Edit");
-    println!("4) List");
-    println!("5) Quit");
-    print!("please enter a number (1-5): ");
-    match io::stdout().flush() {
-        // print! sits in buffer so must flush
-        Ok(_) => (),
-        Err(e) => {
-            println!("hmm, a flush error occured\n{}", e);
-            std::process::exit(1);
-        }
-    }
-}
-
-fn get_input() -> String {
-    let mut buffer = String::new();
-    io::stdin().read_line(&mut buffer).unwrap(); //if this produces Err, panic
-    buffer.trim().to_owned()
-}
-
 fn main() {
     // Storage
     let dat_source = r"C:\Code\rust\activities\data\bills.dat".to_owned();
@@ -109,12 +79,44 @@ fn main() {
                 // quit
                 println!("goodbye");
                 if let Err(e) = write_data(&dat_source, &bills) {
-                    println!("{}", e);
+                    eprintln!("{}", e);
                 }
                 break;
             }
         }
     }
+}
+
+fn make_storage(path: &str) -> HashMap<String, Bill> {
+    let mut ret: HashMap<String, Bill> = HashMap::new();
+    if let Err(e) = read_data(path, &mut ret) {
+        eprintln!("{}", e)
+    }
+    ret
+}
+
+fn main_menu() {
+    println!("\nMenu:");
+    println!("1) Add");
+    println!("2) Delete");
+    println!("3) Edit");
+    println!("4) List");
+    println!("5) Quit");
+    print!("please enter a number (1-5): ");
+    match io::stdout().flush() {
+        // print! sits in buffer so must flush
+        Ok(_) => (),
+        Err(e) => {
+            println!("hmm, a flush error occured\n{}", e);
+            std::process::exit(1);
+        }
+    }
+}
+
+fn get_input() -> String {
+    let mut buffer = String::new();
+    io::stdin().read_line(&mut buffer).unwrap();
+    buffer.trim().to_owned()
 }
 
 fn get_vec_input(args: i32, msg: &str) -> Result<Vec<String>, String> {
@@ -135,8 +137,8 @@ fn get_vec_input(args: i32, msg: &str) -> Result<Vec<String>, String> {
 }
 
 fn add_bill(stg: &mut HashMap<String, Bill>) {
+    let msg = "please enter: id, name, bill_amount (or `back` to menu)";
     loop {
-        let msg = "please enter: id, name, bill_amount (or `back` to menu)";
         let v = match get_vec_input(3, msg) {
             Ok(v) => v,
             Err(e) => {
@@ -162,8 +164,8 @@ fn add_bill(stg: &mut HashMap<String, Bill>) {
 }
 
 fn del_bill(stg: &mut HashMap<String, Bill>) {
+    let msg = "enter ids of bills to remove, seperated by commas (or `back` to menu)";
     loop {
-        let msg = "enter ids of bills to remove, seperated by commas (or `back` to menu)";
         let v = match get_vec_input(-1, msg) {
             Ok(v) => v,
             Err(e) => {
@@ -186,9 +188,9 @@ fn del_bill(stg: &mut HashMap<String, Bill>) {
 }
 
 fn edit_bill(stg: &mut HashMap<String, Bill>) {
+    let msg =
+        "enter id of edit record followed by the new name and new amount\n(or `back` to menu)";
     loop {
-        let msg =
-            "enter id of edit record followed by the new name and new amount\n(or `back` to menu)";
         let v = match get_vec_input(3, msg) {
             Ok(v) => v,
             Err(e) => {
@@ -249,8 +251,14 @@ fn read_data(path: &str, stg: &mut HashMap<String, Bill>) -> std::io::Result<()>
             }
             Ok(s) => {
                 let v: Vec<&str> = s.split(',').map(|x| x.trim()).collect();
-                let amt: f64 = v[2].parse::<f64>().expect("bad parse on file input");
-                stg.insert(v[0].to_owned(), Bill::new(&v[1], amt));
+                let amt: f64 = match v[2].parse::<f64>() {
+                    Ok(v) => v,
+                    Err(e) => {
+                        eprintln!("could not parse amount in this line: {:?}\n{}", ln, e);
+                        continue;
+                    }
+                };
+                stg.insert(v[0].to_string(), Bill::new(&v[1], amt));
             }
         }
     }
