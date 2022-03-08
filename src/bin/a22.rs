@@ -31,12 +31,8 @@ fn div(a: i32, b: i32) -> Option<i32> {
 
 /// Takes two strings and places them immediately one after another.
 fn concat(first: &str, second: &str) -> String {
-    match (first, second) {
-        ("", "") => "".to_owned(),
-        ("", _) => second.trim().to_owned(),
-        (_, "") => first.trim().to_owned(),
-        (_, _) => format!("{} {}", first.trim(), second.trim()),
-    }
+    format!("{}{}", first.trim(), second.trim())
+
 }
 
 fn main() {}
@@ -81,11 +77,11 @@ mod test {
     #[test]
     fn test_concat() {
         let vals = vec![
-            ("a b", ("a", "b")), // ( correct, (params) )
+            ("ab", ("a", "b")), // ( correct, (params) )
             ("b", ("", "b")),
             ("a", ("a", "")),
             ("", ("", "")),
-            ("hmm yep", ("hmm ", " yep")),
+            ("hmmyep", ("hmm ", " yep")),
         ];
 
         for v in vals {
