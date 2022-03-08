@@ -14,6 +14,15 @@ struct User {
     name: String,
 }
 
+impl User {
+    fn new(u: i32, n: String) -> Self {
+        Self {
+            user_id: u,
+            name: n,
+        }
+    }
+}
+
 /// Locates a user id based on the name.
 fn find_user(name: &str) -> Option<i32> {
     let name = name.to_lowercase();
@@ -25,4 +34,29 @@ fn find_user(name: &str) -> Option<i32> {
     }
 }
 
-fn main() {}
+fn main() {
+    let names = vec![
+        "Sam".to_owned(),
+        "Andrew".to_owned(),
+        "Matt".to_owned(),
+        "Katie".to_owned(),
+        "Batty".to_owned(),
+    ];
+
+    for n in &names {
+        print_if_found(n);
+    }
+}
+
+fn print_if_found(name: &str) {
+    // Print out the User struct if found, or a "not found" message if not
+
+    let str = find_user(&name)
+        .map(|i| User::new(i, name.to_owned()))
+        .map(|s| format!("{:?}", s));
+
+    match &str {
+        Some(s) => println!("{}", s),
+        None => println!("{} not found", &name),
+    }
+}
