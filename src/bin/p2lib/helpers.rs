@@ -56,7 +56,7 @@ pub fn populate_hash(c: &mut Contacts, d: &Vec<Vec<String>>) {
     }
 }
 
-fn parse_id(s: &str) -> Option<usize> {
+pub fn parse_id(s: &str) -> Option<usize> {
     match s.parse::<usize>() {
         Ok(i) => Some(i),
         Err(_) => {

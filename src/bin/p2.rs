@@ -35,7 +35,7 @@ mod p2lib;
 
 use p2lib::contacts::{Contacts, Email};
 use p2lib::fileio::read_db_file;
-use p2lib::helpers::populate_hash;
+use p2lib::helpers::{populate_hash, parse_id};
 use std::io::{self, Write};
 
 fn main() {
@@ -113,16 +113,6 @@ fn get_input(s: &str) -> String {
         .read_line(&mut buffer)
         .expect("read_line borked somehow");
     buffer.trim().to_owned()
-}
-
-fn parse_id(s: &str) -> Option<usize> {
-    match s.parse::<usize>() {
-        Ok(i) => Some(i),
-        Err(_) => {
-            eprintln!("{} cannot be parsed into a usize", s);
-            return None;
-        }
-    }
 }
 
 fn add_contact(c: &mut Contacts) {
