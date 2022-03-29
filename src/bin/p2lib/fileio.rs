@@ -1,19 +1,25 @@
+use super::contacts::Contacts;
 use std::fs::File;
 use std::io::{self, BufRead, Write};
-use std::path::PathBuf;
 
-pub fn read_db_file(path: &str, del: char) -> Result<Vec<Vec<String>>, String> {
+pub fn read_db_file(path: &Vec<String>, del: char) -> Result<Vec<Vec<String>>, String> {
     // grab file, and return table of values
     // del is the delimeter used in the file to seperate fields
 
-    let path = PathBuf::from(path);
-    let file = match File::open(path) {
-        Ok(f) => f,
-        Err(e) => return Err(format!("{}", e)),
+    // catch empty vector
+    if path.is_empty() {
+        return Err("no paths defined to load file data".to_string());
+    }
+
+    let file = match get_file_from_paths(path) {
+        Some(f) => {
+            println!("using data file: {:?}", &f);
+            f
+        }
+        None => return Err("no provided paths can be found for data files".to_string()),
     };
 
     let mut out_vec: Vec<Vec<String>> = Vec::new();
-
     for ln in io::BufReader::new(file).lines() {
         match &ln {
             Err(e) => {
@@ -30,6 +36,29 @@ pub fn read_db_file(path: &str, del: char) -> Result<Vec<Vec<String>>, String> {
     Ok(out_vec)
 }
 
-pub fn write_db_file(path: &str, del: char) -> Result<(), String> {
-    unimplemented!();
+fn get_file_from_paths(path: &Vec<String>) -> Option<File> {
+    for p in path {
+        match File::open(p) {
+            Ok(f) => return Some(f),
+            Err(_) => continue,
+        }
+    }
+    return None;
+}
+
+pub fn write_db_file(c: &Contacts, path: &str, del: char) -> Result<(), String> {
+    if c.get_len() == 0 {
+        return Err("empty contacts, nothign to write.".to_string());
+    }
+
+    let mut file = match File::create(path) {
+        Ok(f) => f,
+        Err(_) => return Err(format!("could not open to write: {}", path)),
+    };
+
+    let buffer = c.write_file_string(del);
+    match file.write(&buffer.as_bytes()) {
+        Ok(_) => return Ok(()),
+        Err(e) => return Err(format!("{}", e)),
+    }
 }

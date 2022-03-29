@@ -1,5 +1,6 @@
 use regex::Regex;
 use std::collections::HashMap;
+use std::fmt;
 
 // lets have an email type to allow for ease of data validation
 #[derive(Debug, Clone)]
@@ -12,6 +13,12 @@ impl Email {
             true => Some(Self(e)),
             false => None,
         }
+    }
+}
+
+impl fmt::Display for Email {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 
@@ -69,6 +76,17 @@ impl Contact {
             None => format!("{} {} : NULL", self.first, self.last),
             Some(e) => format!("{} {} : {}", self.first, self.last, e.0),
         }
+    }
+
+    fn print_email(&self) -> String {
+        match &self.email {
+            Some(e) => format!("{}", e),
+            None => "".to_string(),
+        }
+    }
+
+    pub fn get_write_line(&self, del: char) -> String {
+        format!("{} {}{}{}", self.first, self.last, del, self.print_email())
     }
 }
 
@@ -178,5 +196,17 @@ impl Contacts {
             0 => None,
             _ => Some(recs),
         }
+    }
+
+    pub fn get_len(&self) -> usize {
+        self.inner.len()
+    }
+
+    pub fn write_file_string(&self, d: char) -> String {
+        let mut output = "id,name,email\n".to_string();
+        for (k, c) in self.inner.iter() {
+            output.push_str(&format!("{}{}{}\n", k, d, c.get_write_line(d)))
+        }
+        output
     }
 }
