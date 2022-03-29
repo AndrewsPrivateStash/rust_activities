@@ -117,7 +117,6 @@ fn menu() -> Option<u8> {
     where are we!??
 
     - implement
-    - " save to local file
     - " save to DB
     - " import from DB
         > if DB fails then use local file
