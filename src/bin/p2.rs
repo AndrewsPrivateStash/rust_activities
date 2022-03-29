@@ -99,7 +99,7 @@ fn menu() -> Option<u8> {
     // get option and parse
     loop {
         let selection = get_input("").trim().to_owned();
-        if selection == "" {
+        if selection.is_empty() {
             return None;
         }
 

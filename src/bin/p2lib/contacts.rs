@@ -38,12 +38,6 @@ impl Contact {
         }
     }
 
-    pub fn swap(&mut self, c: &Contact) {
-        self.first = c.first.clone();
-        self.last = c.last.clone();
-        self.email = c.email.clone();
-    }
-
     pub fn edit_name(&mut self, name: (String, String)) {
         self.first = name.0;
         self.last = name.1;
@@ -65,10 +59,7 @@ impl Contact {
         if self.email.is_none() || e.is_none() {
             return false;
         }
-        match e.as_ref().unwrap().0.to_lowercase() {
-            x if x == self.email.as_ref().unwrap().0.to_lowercase() => true,
-            _ => false,
-        }
+        matches!(e.as_ref().unwrap().0.to_lowercase(), x if x == self.email.as_ref().unwrap().0.to_lowercase())
     }
 
     pub fn print(&self) -> String {
@@ -146,28 +137,10 @@ impl Contacts {
         self.inner.remove_entry(&id);
     }
 
-    pub fn get_rec(&self, id: usize) -> Option<Contact> {
-        self.inner.get(&id).cloned()
-    }
-
-    pub fn swap_rec(&mut self, id: usize, c: &Contact) {
-        let r = self.inner.get_mut(&id);
-        match r {
-            None => {
-                eprintln!("the id: {} was not found in contacts", id);
-                return;
-            }
-            Some(v) => v.swap(c),
-        }
-    }
-
     pub fn edit_rec_name(&mut self, id: usize, name: (String, String)) {
         let r = self.inner.get_mut(&id);
         match r {
-            None => {
-                eprintln!("the id: {} was not found in contacts", id);
-                return;
-            }
+            None => eprintln!("the id: {} was not found in contacts", id),
             Some(v) => v.edit_name(name),
         }
     }
@@ -175,10 +148,7 @@ impl Contacts {
     pub fn edit_rec_email(&mut self, id: usize, e: Option<Email>) {
         let r = self.inner.get_mut(&id);
         match r {
-            None => {
-                eprintln!("the id: {} was not found in contacts", id);
-                return;
-            }
+            None => eprintln!("the id: {} was not found in contacts", id),
             Some(v) => v.edit_email(e),
         }
     }

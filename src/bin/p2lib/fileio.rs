@@ -2,7 +2,7 @@ use super::contacts::Contacts;
 use std::fs::File;
 use std::io::{self, BufRead, Write};
 
-pub fn read_db_file(path: &Vec<String>, del: char) -> Result<Vec<Vec<String>>, String> {
+pub fn read_db_file(path: &[String], del: char) -> Result<Vec<Vec<String>>, String> {
     // grab file, and return table of values
     // del is the delimeter used in the file to seperate fields
 
@@ -36,14 +36,14 @@ pub fn read_db_file(path: &Vec<String>, del: char) -> Result<Vec<Vec<String>>, S
     Ok(out_vec)
 }
 
-fn get_file_from_paths(path: &Vec<String>) -> Option<File> {
+fn get_file_from_paths(path: &[String]) -> Option<File> {
     for p in path {
         match File::open(p) {
             Ok(f) => return Some(f),
             Err(_) => continue,
         }
     }
-    return None;
+    None
 }
 
 pub fn write_db_file(c: &Contacts, path: &str, del: char) -> Result<(), String> {
@@ -57,8 +57,8 @@ pub fn write_db_file(c: &Contacts, path: &str, del: char) -> Result<(), String> 
     };
 
     let buffer = c.write_file_string(del);
-    match file.write(&buffer.as_bytes()) {
-        Ok(_) => return Ok(()),
-        Err(e) => return Err(format!("{}", e)),
+    match file.write(buffer.as_bytes()) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!("{}", e)),
     }
 }

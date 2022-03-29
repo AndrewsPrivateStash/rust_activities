@@ -1,7 +1,7 @@
 use super::contacts::Contacts;
 use super::contacts::Email;
 
-pub fn populate_hash(c: &mut Contacts, d: &Vec<Vec<String>>) {
+pub fn populate_hash(c: &mut Contacts, d: &[Vec<String>]) {
     // RULES
     // must have first two fields (otherwise drop)
     // if third is blank, then None value for email
@@ -12,7 +12,7 @@ pub fn populate_hash(c: &mut Contacts, d: &Vec<Vec<String>>) {
         i += 1;
 
         // skip empty records
-        if rec.len() == 0 {
+        if rec.is_empty() {
             eprintln!("empty record: line {}", i);
             continue;
         }
@@ -20,7 +20,7 @@ pub fn populate_hash(c: &mut Contacts, d: &Vec<Vec<String>>) {
         // skip if id is missing
         match rec.get(0) {
             None => continue,
-            Some(v) if v == "" => {
+            Some(v) if v.is_empty() => {
                 eprintln!("missing id: {:?}, on line: {}", rec, i);
                 continue;
             }
@@ -33,7 +33,7 @@ pub fn populate_hash(c: &mut Contacts, d: &Vec<Vec<String>>) {
                 eprintln!("empty name: {:?}, on line: {}", rec, i);
                 continue;
             }
-            Some(v) if v == "" => {
+            Some(v) if v.is_empty() => {
                 eprintln!("empty name: {:?}, on line: {}", rec, i);
                 continue;
             }
@@ -61,7 +61,7 @@ pub fn parse_id(s: &str) -> Option<usize> {
         Ok(i) => Some(i),
         Err(_) => {
             eprintln!("{} cannot be parsed into a usize", s);
-            return None;
+            None
         }
     }
 }

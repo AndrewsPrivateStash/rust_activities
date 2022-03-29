@@ -18,7 +18,7 @@ pub fn add_contact(c: &mut Contacts) {
     println!("Enter to go back");
     loop {
         let in_str = get_input("enter: id, firstname, lastname, email");
-        if in_str == "" {
+        if in_str.is_empty() {
             break;
         }
         let v: Vec<String> = in_str.split(',').map(|x| x.trim().to_string()).collect();
@@ -41,7 +41,7 @@ pub fn delete_contact(c: &mut Contacts) {
     println!("Enter to go back");
     loop {
         let in_str = get_input("enter: id(s) seperated by commmas:");
-        if in_str == "" {
+        if in_str.is_empty() {
             break;
         }
         let v: Vec<String> = in_str.split(',').map(|x| x.trim().to_string()).collect();
@@ -59,7 +59,7 @@ pub fn edit_contact(c: &mut Contacts) {
     println!("enter contact id to edit fields in turn (Enter to go back)");
     loop {
         let in_str = get_input("enter a contact id to edit:");
-        if in_str == "" {
+        if in_str.is_empty() {
             break;
         }
         let v: Vec<String> = in_str.split(',').map(|x| x.trim().to_string()).collect();
@@ -88,7 +88,7 @@ fn get_first_and_last() -> Option<(String, String)> {
     loop {
         let in_str = get_input("enter new first and last name seperated by space:");
         let v: Vec<String> = in_str.split(' ').map(|x| x.trim().to_string()).collect();
-        if in_str == "" {
+        if in_str.is_empty() {
             return None;
         }
         if v.len() != 2 {
@@ -103,7 +103,7 @@ fn get_email() -> Option<Email> {
     loop {
         let in_str = get_input("enter new email, or enter for none:");
         let v: Vec<String> = in_str.split(' ').map(|x| x.trim().to_string()).collect();
-        if in_str == "" {
+        if in_str.is_empty() {
             return None;
         }
         if v.len() != 1 {
@@ -118,11 +118,12 @@ pub fn search_contacts(c: &Contacts) {
     // match first, last name or email (lowercase)
     let src = get_input("enter search string:");
     let v = c.search(&src);
-    if v.is_none() {
-        println!("could not find any records matching: {}", &src);
-    } else {
-        for (i, r) in v.unwrap().iter() {
-            println!("found id: {}\t{}", i, r.print());
+
+    if let Some(r) = &v {
+        for (i, c) in r.iter() {
+            println!("found id: {}\t{}", i, c.print());
         }
+    } else {
+        println!("could not find any records matching: {}", &src);
     }
 }
