@@ -32,8 +32,8 @@ pub struct Contact {
 impl Contact {
     pub fn new(f: String, l: String, e: Option<Email>) -> Self {
         Self {
-            first: f,
-            last: l,
+            first: clean_name_string(&f),
+            last: clean_name_string(&l),
             email: e,
         }
     }
@@ -178,5 +178,40 @@ impl Contacts {
             output.push_str(&format!("{}{}{}\n", k, d, c.get_write_line(d)))
         }
         output
+    }
+}
+
+fn clean_name_string(s: &str) -> String {
+    let mut clean_str = String::new();
+    for c in s.to_lowercase().chars() {
+        if c.is_alphabetic() || c == '-' || c == '\'' {
+            clean_str.push(c);
+        }
+    }
+
+    let mut cs = clean_str.chars();
+    match cs.next() {
+        None => clean_str,
+        Some(c) => c.to_uppercase().chain(cs).collect(),
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::p2lib::contacts;
+
+    #[test]
+    fn test_clean_name_string() {
+        let vals = vec![
+            ("Andrew", "anDrew"), // ( correct, (params) )
+            ("Ru-pert", "ru-pert"),
+            ("", ""),
+            ("Andrew", "an;drEw"),
+            ("Andrew's", "andRew's"),
+        ];
+
+        for v in vals {
+            assert_eq!(contacts::clean_name_string(v.1), v.0.to_string());
+        }
     }
 }

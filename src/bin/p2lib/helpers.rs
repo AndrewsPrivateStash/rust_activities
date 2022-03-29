@@ -7,7 +7,7 @@ pub fn populate_hash(c: &mut Contacts, d: &[Vec<String>]) {
     // if third is blank, then None value for email
     // if columns out of order, ignore for now
 
-    let mut i: u64 = 0;
+    let mut i: u64 = 1; // assumes header
     for rec in d {
         i += 1;
 
