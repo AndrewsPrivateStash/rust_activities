@@ -67,7 +67,6 @@ fn main() {
         match menu() {
             Some(1) => add_contact(&mut contact_list),
             Some(2) => delete_contact(&mut contact_list),
-
             Some(3) => edit_contact(&mut contact_list),
             Some(4) => contact_list.print_elems(),
             Some(5) => search_contacts(&contact_list),

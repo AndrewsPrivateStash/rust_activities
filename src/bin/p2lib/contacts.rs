@@ -192,7 +192,7 @@ fn clean_name_string(s: &str) -> String {
     let mut cs = clean_str.chars();
     match cs.next() {
         None => clean_str,
-        Some(c) => c.to_uppercase().chain(cs).collect(),
+        Some(c) => c.to_uppercase().collect::<String>() + cs.as_str(),
     }
 }
 
